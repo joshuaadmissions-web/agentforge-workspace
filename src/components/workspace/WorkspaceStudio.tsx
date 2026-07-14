@@ -48,11 +48,23 @@ export function WorkspaceStudio() {
 
   const complete = Object.values(metrics).filter((metric) => metric.status === "completed").length;
   return <main className={styles.studio}>
-    <header className={styles.header}><div><span className={styles.wordmark}>AGENTFORGE</span><span className={styles.environment}>LOCAL / DEVELOPMENT</span></div><div className={styles.actions}><button onClick={createDeployment} disabled={deploying}>{deploying ? "Compiling…" : "Generate Deployment"}</button><button className={styles.run} onClick={runGraph} disabled={running}>{running ? "Running…" : "Run Mesh"}</button></div></header>
+    <header className={styles.header}>
+      <div className={styles.brand}><span className={styles.brandMark}>AF</span><div><span className={styles.wordmark}>AgentForge</span><span className={styles.environment}>Workspace · Local runtime</span></div></div>
+      <div className={styles.headerStatus}><span className={styles.statusDot} /><span>Runtime connected</span></div>
+      <div className={styles.actions}><button className={styles.deploy} onClick={createDeployment} disabled={deploying}>{deploying ? "Compiling…" : "⌘  Deploy profile"}</button><button className={styles.run} onClick={runGraph} disabled={running}>{running ? "Running mesh…" : "▶  Run mesh"}</button></div>
+    </header>
     <section className={styles.workspace}>
-      <aside className={styles.sidebar}><h2>Execution map</h2><p>{graph.name}</p><dl><dt>Agents</dt><dd>{graph.nodes.length}</dd><dt>Routes</dt><dd>{graph.edges.length}</dd><dt>Complete</dt><dd>{complete}/{graph.nodes.length}</dd></dl><h3>Profiles</h3><button className={styles.profile}>Research & review</button><button className={styles.profile}>Incident response</button></aside>
-      <div className={styles.center}><section className={styles.graphPanel}><div className={styles.panelTitle}><span>Agent execution topology</span><span className={styles.live}>{running ? "LIVE" : "READY"}</span></div><AgentGraphCanvas /></section><section className={styles.terminal}><div className={styles.panelTitle}><span>Runtime terminal</span><button onClick={clearTerminal}>Clear</button></div><pre>{terminalLines.join("\n")}</pre></section></div>
-      <aside className={styles.inspector}><h2>Prompt configuration</h2><label htmlFor="prompt">Run input</label><textarea id="prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={9} /><h3>Observed metrics</h3>{graph.nodes.map((node) => <div className={styles.metric} key={node.id}><span>{node.label}</span><b>{metrics[node.id]?.latencyMs ? `${metrics[node.id].latencyMs} ms` : metrics[node.id]?.status ?? "idle"}</b></div>)}</aside>
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarLabel}>ACTIVE WORKFLOW</div><h2>Research review</h2><p className={styles.flowName}>{graph.name}</p>
+        <div className={styles.overview}><div><span>Agents</span><strong>{graph.nodes.length}</strong></div><div><span>Routes</span><strong>{graph.edges.length}</strong></div><div><span>Finished</span><strong>{complete}/{graph.nodes.length}</strong></div></div>
+        <h3>Saved workflows</h3><button className={`${styles.profile} ${styles.profileActive}`}><span>✦</span> Research & review</button><button className={styles.profile}><span>◌</span> Incident response</button><button className={styles.profile}><span>◇</span> Product brief</button>
+        <div className={styles.sidebarFooter}><span className={styles.pulse} /> Ready for execution</div>
+      </aside>
+      <div className={styles.center}>
+        <section className={styles.graphPanel}><div className={styles.panelTitle}><div><span className={styles.eyebrow}>VISUAL ORCHESTRATION</span><strong>Agent execution topology</strong></div><span className={`${styles.live} ${running ? styles.liveRunning : ""}`}>{running ? "● LIVE RUN" : "● READY"}</span></div><AgentGraphCanvas /></section>
+        <section className={styles.terminal}><div className={styles.panelTitle}><div><span className={styles.eyebrow}>EVENT STREAM</span><strong>Runtime console</strong></div><button onClick={clearTerminal}>Clear output</button></div><pre>{terminalLines.join("\n")}</pre></section>
+      </div>
+      <aside className={styles.inspector}><div className={styles.inspectorHeading}><div><span className={styles.eyebrow}>EXECUTION INPUT</span><h2>Prompt workspace</h2></div><span className={styles.promptIcon}>✦</span></div><label htmlFor="prompt">What should this mesh investigate?</label><textarea id="prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={8} /><div className={styles.promptFooter}><span>{prompt.length} characters</span><span>⌘ ↵ to run</span></div><h3>Live metrics</h3><div className={styles.metricsCard}>{graph.nodes.map((node) => <div className={styles.metric} key={node.id}><span className={styles.metricName}><i className={styles[`kind${node.kind[0].toUpperCase()}${node.kind.slice(1)}`]} />{node.label}</span><b>{metrics[node.id]?.latencyMs ? `${metrics[node.id].latencyMs} ms` : metrics[node.id]?.status ?? "waiting"}</b></div>)}</div><div className={styles.tip}><span>✦</span><p><strong>Tip</strong> Run the mesh in demo mode first, then add an API key for live model execution.</p></div></aside>
     </section>
   </main>;
 }
