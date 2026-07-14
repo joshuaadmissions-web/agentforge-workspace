@@ -7,8 +7,8 @@ export interface AgentNodeConfig {
   kind: AgentKind;
   model: string;
   systemPrompt: string;
-  temperature: number;
-  maxTokens: number;
+  temperature?: number;
+  maxTokens?: number;
   metadata?: Record<string, string>;
 }
 
