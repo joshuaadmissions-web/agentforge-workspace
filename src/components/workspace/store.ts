@@ -19,10 +19,10 @@ interface WorkspaceState {
 export const defaultGraph: AgentGraphDefinition = {
   name: "research-and-review-mesh",
   nodes: [
-    { id: "intake", label: "Request Intake", kind: "input", model: "input", systemPrompt: "Normalize the incoming request.", temperature: 0, maxTokens: 600 },
-    { id: "research", label: "Research Agent", kind: "agent", model: "gpt-5.6", systemPrompt: "Find evidence and identify uncertainty.", temperature: 0.2, maxTokens: 1800 },
-    { id: "review", label: "Quality Gate", kind: "router", model: "gpt-5.6", systemPrompt: "Review claims, citations, and risk.", temperature: 0.1, maxTokens: 900 },
-    { id: "deliver", label: "Deliverable", kind: "output", model: "output", systemPrompt: "Present a concise, defensible answer.", temperature: 0, maxTokens: 1200 },
+    { id: "intake", label: "Request Intake", kind: "input", model: "input", systemPrompt: "Normalize the incoming request." },
+    { id: "research", label: "Research Agent", kind: "agent", model: "glm-4-flash", systemPrompt: "Find evidence and identify uncertainty." },
+    { id: "review", label: "Quality Gate", kind: "router", model: "glm-4-flash", systemPrompt: "Review claims, citations, and risk." },
+    { id: "deliver", label: "Deliverable", kind: "output", model: "output", systemPrompt: "Present a concise, defensible answer." },
   ],
   edges: [
     { id: "intake-research", source: "intake", target: "research" },
