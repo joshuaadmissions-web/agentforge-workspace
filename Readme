@@ -1,0 +1,52 @@
+# AgentForge Workspace
+
+AgentForge Workspace is a local developer studio for observing a routed multi-agent workflow, running it through the OpenAI Responses API, and compiling its graph into a container deployment profile.
+
+## What works
+
+- Visual React Flow topology with node status and per-node latency telemetry.
+- Typed graph runner with graph validation, bounded traversal, loop protection, streaming execution events, and cancellation support.
+- Prompt input and runtime terminal.
+- Live OpenAI Responses API execution using each agent's configured system prompt, model, temperature, and output limit.
+- Explicit local demo mode for judge-friendly runs without an API key; the terminal shows execution behavior, but no model call is made.
+- Deployment compiler that returns a multi-stage Dockerfile, Kubernetes Namespace, ConfigMap, Deployment, Service, and rollout script.
+- Health endpoint at `GET /api/health` for container and Kubernetes probes.
+
+## Stack
+
+Next.js 15 (App Router), React 19, TypeScript, Zustand, React Flow, the OpenAI Responses API, Docker, and Kubernetes.
+
+## Run locally
+
+Prerequisite: Node.js 22 or newer.
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Open `http://localhost:3000/workspace`.
+
+`AGENTFORGE_DEMO_MODE=true` is the default in `.env.example`, so the mesh can be demonstrated without a secret. To use OpenAI, set `OPENAI_API_KEY` in `.env.local`; AgentForge then sends configured agent nodes to the Responses API. Set `AGENTFORGE_DEMO_MODE=false` if missing credentials should fail rather than simulate.
+
+## Verify
+
+```bash
+npm run typecheck
+npm run build
+```
+
+For a deployment profile, choose **Generate Deployment** in the workspace or POST an `AgentGraphDefinition`, image reference, and replica count to `/api/deploy`. The response contains `Dockerfile`, `k8s/agentforge-mesh.yaml`, and `deploy.sh`; save those files in the target service repository, build and publish the requested image, then run the generated script.
+
+## Architecture
+
+`src/lib/agentFlowEngine.ts` is framework-independent graph orchestration. It validates directed graphs, limits hops, prevents repeated node/input loops, and emits execution events. `src/app/api/execute/route.ts` is the server-only OpenAI boundary, which keeps API keys out of the browser. `src/app/api/deploy/route.ts` converts the same graph into deployment artifacts. The React workspace consumes engine events to update the canvas, metrics panel, and terminal.
+
+## Codex and GPT-5.6 collaboration
+
+This project was scaffolded and iterated with Codex during the hackathon submission period. Codex generated and verified the typed Next.js foundation, graph execution engine, React Flow workspace, deployment endpoint, health check, and this reproducible documentation. Product decisions—including the graph model, demo-mode transparency, API-key isolation, and Kubernetes security posture—were reviewed and selected by the project author. GPT-5.6 is the configured model for live agent nodes; its use requires a valid OpenAI API key and account access.
+
+## Submission notes
+
+Before submitting, the project owner must add the public or shared-private repository URL, a publicly visible demonstration video under three minutes with audio, the `/feedback` Codex Session ID, and any necessary test credentials or demo URL. Verify eligibility, ownership, third-party licensing, and all current Hackathon deadlines against the official rules.
